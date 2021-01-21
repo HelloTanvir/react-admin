@@ -1,24 +1,28 @@
-import logo from './logo.svg';
-import './App.css';
+import restProvider from 'ra-data-simple-rest';
+import { Admin, fetchUtils, Resource } from 'react-admin';
+import authProvider from './authProvider';
+import AppointmentCreate from './components/AppointmentCreate';
+import AppointmentEdit from './components/AppointmentEdit';
+import AppointmentList from './components/AppointmentList';
+import DesignationCreate from './components/DesignationCreate';
+import DesignationEdit from './components/DesignationEdit';
+import DesignationList from './components/DesignationList';
+
+const httpClient = (url, options = {}) => {
+  options.user = {
+      authenticated: true,
+      token: `Bearer ${localStorage.getItem('auth')}`
+  };
+  // options.headers.set('Content-Range', 'page 0-10/10');
+  return fetchUtils.fetchJson(url, options);
+};
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Admin authProvider={authProvider} dataProvider={restProvider('/api', httpClient)}>
+      <Resource name='consultent/designation' list={DesignationList} create={DesignationCreate} edit={DesignationEdit} />
+      <Resource name='consultent/appointment' list={AppointmentList} create={AppointmentCreate} edit={AppointmentEdit} />
+    </Admin>
   );
 }
 
